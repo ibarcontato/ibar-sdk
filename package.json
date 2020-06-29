@@ -1,0 +1,22 @@
+{
+  "name": "ibar-sdk",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ibarcontato/user.git"
+  },
+  "author": "Rodrigo Muniz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ibarcontato/user/issues"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.701.0"
+  },
+  "homepage": "https://github.com/ibarcontato/user#readme"
+}
