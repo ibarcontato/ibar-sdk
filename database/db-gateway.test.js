@@ -1,4 +1,4 @@
-const { dbGateway, getActualItem } = require('./db-gateway');
+const { dbGateway, getActualItem, createItem } = require('./db-gateway');
 
 const mockedDocumentClient = require('./doc-client-mock');
 const docClient = new mockedDocumentClient();
@@ -106,7 +106,128 @@ describe('async function getActualItem(docClient, tableName, keys)', () => {
   })
 })
 
-describe(`async function dbGateway(docClient, method, tableName,
+describe('\n async function createItem(docClient, body, path, header, tableName)', () => {
+  test('should return an item object when all input are valid', async () => {
+    const tableName = 'tableName';
+    const path = { id: 'id' };
+    const header = { changedBy: 'changedBy' };
+    const body = { id: 'id' };
+
+    const expected = { id: 'id', historic: [{ changedBy: 'changedBy' }] }
+
+    const received = await createItem(docClient, body, path, header, tableName)
+    expect(received.id).toEqual(expected.id)
+    expect(received.historic.changedBy).toEqual(expected.historic.changedBy)
+  })
+
+  test('should return an error object when docClient is not DocumentClient', async () => {
+    const docClient = class SomeWrongClass { };
+
+    const tableName = 'tableName';
+    const path = { id: 'id' };
+    const header = { changedBy: 'changedBy' };
+    const body = { id: 'id' };
+
+    const expected = JSON.stringify({
+      statusCode: 400,
+      errorMessage: '"docClient" should be a DocumentClient',
+      inputData: docClient
+    });
+
+    const received = await createItem(docClient, body, path, header, tableName).catch(received => received);
+    expect(JSON.parse(received)).toEqual(JSON.parse(expected))
+  })
+
+  test('should return an error object when body is not an object', async () => {
+    const tableName = 'tableName';
+    const path = { id: 'id' };
+    const header = { changedBy: 'changedBy' };
+    const bodies = [1, '', true, [], () => { }, undefined, null];;
+
+    for (let body of bodies) {
+      const expected = JSON.stringify({
+        statusCode: 400,
+        errorMessage: '"body" should be an object',
+        inputData: body
+      });
+
+      const received = await createItem(docClient, body, path, header, tableName).catch(received => received);
+      expect(JSON.parse(received)).toEqual(JSON.parse(expected))
+    }
+  })
+  test('should return an error object when body is empty', async () => {
+    const tableName = 'tableName';
+    const path = { id: 'id' };
+    const header = { changedBy: 'changedBy' };
+    const body = {};
+
+    const expected = JSON.stringify({
+      statusCode: 400,
+      errorMessage: '"body" should not be empty',
+      inputData: body
+    });
+
+    const received = await createItem(docClient, body, path, header, tableName).catch(received => received);
+    expect(JSON.parse(received)).toEqual(JSON.parse(expected))
+  })
+
+  test('should return an error object when header is not an object', async () => {
+    const tableName = 'tableName';
+    const path = { id: 'id' };
+    const body = { id: 'id' };
+    const headers = [1, '', true, [], () => { }, undefined, null];;
+
+    for (let header of headers) {
+      const expected = JSON.stringify({
+        statusCode: 400,
+        errorMessage: '"header" should be an object',
+        inputData: header
+      });
+
+      const received = await createItem(docClient, body, path, header, tableName).catch(received => received);
+      expect(JSON.parse(received)).toEqual(JSON.parse(expected))
+    }
+  })
+  test('should return an error object when header has no "changedBy" attribute', async () => {
+    const tableName = 'tableName';
+    const path = { id: 'id' };
+    const changedByList = [1, {}, true, [], () => { }, undefined, null];
+    const body = {id: 'id'};
+
+    for (let changedBy of changedByList) {
+      const header = { changedBy: changedBy };
+
+      const expected = JSON.stringify({
+        statusCode: 400,
+        errorMessage: '"changedBy" should be string',
+        inputData: changedBy
+      });
+
+      const received = await createItem(docClient, body, path, header, tableName).catch(received => received);
+      expect(JSON.parse(received)).toEqual(JSON.parse(expected))
+    }
+  })
+  
+  test('should return an error object when tableName is not string', async () => { 
+    const path = { id: 'id' };
+    const header = { changedBy: 'changedBy'};
+    const body = {id: 'id'};
+    const tableNames = [1, {}, true, [], () => { }, undefined, null];
+
+    for (let tableName of tableNames) {
+      const expected = JSON.stringify({ 
+        statusCode: 400,
+        errorMessage: '"tableName" should be string', 
+        inputData: tableName
+      }); 
+ 
+      const received = await createItem(docClient, body, path, header, tableName).catch(received => received);
+      expect(JSON.parse(received)).toEqual(JSON.parse(expected))
+    }
+  })
+})
+
+describe(`\n async function dbGateway(docClient, method, tableName,
   {
     body,
     path,
@@ -145,7 +266,7 @@ describe(`async function dbGateway(docClient, method, tableName,
     //PUT: should return an error object when body is not an object
     //PUT: should return an error object when body is an empty object
     //PUT: should return an error object when path is not an object
-    //PUT: should return an error object when path has no "modifiedBy" attribute
+    //PUT: should return an error object when path has no "changedBy" attribute
 
 
     test('should return a successful object when all input are valid', async () => {

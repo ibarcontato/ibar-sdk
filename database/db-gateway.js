@@ -42,22 +42,22 @@ const dbGateway = async function dbGateway(docClient, method, tableName,
     Key: key,
     Item: item,
     ProjectionExpression: projectionExpression,
-    KeyConditionExpression: keyConditionExpression, 
+    KeyConditionExpression: keyConditionExpression,
     ExpressionAttributeValues: expressionAttributeValues,
     ExpressionAttributeNames: expressionAttributeNames,
     FilterExpression: filterExpression,
     // error: error
-  } 
- 
+  }
+
   const result = await docClient[method](dbParams).promise().catch(result => result)
-  
+
   // ==================================================
   // VERIFICATING IF THE BELOW PART IS NECESSARY 27/06
   // ==================================================
   // if (result.Payload && typeof result.Payload == 'string')
   //   result.Payload = JSON.parse(result.Payload);
 
-  if (result.message || result.Payload && result.Payload.errorMessage) 
+  if (result.message || result.Payload && result.Payload.errorMessage)
     throwErrorResponseModel(result, result.message, result.statusCode);
 
   return new SuccessResponseModel({
@@ -87,9 +87,27 @@ const getActualItem = async function getActualItem(docClient, tableName, keys) {
   })
 
   return result.item == undefined ? {} : result.item;
-}  
+}
 
 const createItem = async function createItem(docClient, body, path, header, tableName) {
+  if (!isClassOf(docClient, 'DocumentClient'))
+    throwErrorResponseModel(docClient, '"docClient" should be a DocumentClient');
+
+  if (!isObject(body))
+    throwErrorResponseModel(body, '"body" should be an object');
+
+  if (isEmptyObject(body))
+    throwErrorResponseModel(body, '"body" should not be empty');
+
+  if (!isObject(header))
+    throwErrorResponseModel(header, '"header" should be an object');
+
+  if (typeof header.changedBy != 'string')
+    throwErrorResponseModel(header.changedBy, '"changedBy" should be string');
+
+  if (typeof tableName != 'string')
+    throwErrorResponseModel(tableName, '"tableName" should be string');
+
   let item = {};
   for (let bodyKey in body)
     item[bodyKey] = body[bodyKey];
@@ -100,14 +118,14 @@ const createItem = async function createItem(docClient, body, path, header, tabl
   if (isEmptyObject(item))
     throwErrorResponseModel(item, 'item should not be empty.')
 
-  const userId = header.userId;
+  const changedBy = header.changedBy;
 
-  const actualItem = await this.getActualItem(docClient, tableName, path);
-  const actualHistoricList = actualItem.historic == undefined ? [] : Object.assign([], actualItem.historic);                               
+  const actualItem = await getActualItem(docClient, tableName, path);
+  const actualHistoricList = actualItem.historic == undefined ? [] : Object.assign([], actualItem.historic);
   actualItem.historic = undefined;
   const newHistoricItem = {
     changedWhen: `${new Date()}`,
-    changedBy: userId,
+    changedBy: changedBy,
     item: Object.assign({}, actualItem)
   }
 
@@ -126,7 +144,7 @@ const createItem = async function createItem(docClient, body, path, header, tabl
 
 
 module.exports = {
-  dbGateway, 
+  dbGateway,
   getActualItem,
   createItem
 } 

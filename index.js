@@ -18,6 +18,6 @@ exports.utils = {
 }
 
 exports.database = {
-  dbGateway: require('./database/db-gateway')
+  dbGateway: require('./database/db-gateway').dbGateway
 }
 
