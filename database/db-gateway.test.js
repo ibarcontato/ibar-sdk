@@ -8,7 +8,7 @@ describe('async function getActualItem(docClient, tableName, keys)', () => {
     const tableName = 'tableName';
     const keys = { id: 'id' };
 
-    const expected = { id: 'id' }
+    const expected = { id: 'id', historic: [{ changedBy: 'changedBy' }] }
 
     const received = await getActualItem(docClient, tableName, keys)
     expect(received).toEqual(expected)
@@ -171,6 +171,24 @@ describe('\n async function createItem(docClient, body, path, header, tableName)
     expect(JSON.parse(received)).toEqual(JSON.parse(expected))
   })
 
+  test('should return an error object when path is not an object', async () => {
+    const tableName = 'tableName';
+    const header = { changedBy: 'changedBy' };
+    const body = { id: 'id' };
+    const paths = [1, '', true, [], () => { }, undefined, null];;
+
+    for (let path of paths) {
+      const expected = JSON.stringify({
+        statusCode: 400,
+        errorMessage: '"path" should be an object',
+        inputData: path
+      });
+
+      const received = await createItem(docClient, body, path, header, tableName).catch(received => received);
+      expect(JSON.parse(received)).toEqual(JSON.parse(expected))
+    }
+  })
+
   test('should return an error object when header is not an object', async () => {
     const tableName = 'tableName';
     const path = { id: 'id' };
@@ -188,11 +206,13 @@ describe('\n async function createItem(docClient, body, path, header, tableName)
       expect(JSON.parse(received)).toEqual(JSON.parse(expected))
     }
   })
+
+
   test('should return an error object when header has no "changedBy" attribute', async () => {
     const tableName = 'tableName';
     const path = { id: 'id' };
     const changedByList = [1, {}, true, [], () => { }, undefined, null];
-    const body = {id: 'id'};
+    const body = { id: 'id' };
 
     for (let changedBy of changedByList) {
       const header = { changedBy: changedBy };
@@ -207,20 +227,20 @@ describe('\n async function createItem(docClient, body, path, header, tableName)
       expect(JSON.parse(received)).toEqual(JSON.parse(expected))
     }
   })
-  
-  test('should return an error object when tableName is not string', async () => { 
+
+  test('should return an error object when tableName is not string', async () => {
     const path = { id: 'id' };
-    const header = { changedBy: 'changedBy'};
-    const body = {id: 'id'};
+    const header = { changedBy: 'changedBy' };
+    const body = { id: 'id' };
     const tableNames = [1, {}, true, [], () => { }, undefined, null];
 
     for (let tableName of tableNames) {
-      const expected = JSON.stringify({ 
+      const expected = JSON.stringify({
         statusCode: 400,
-        errorMessage: '"tableName" should be string', 
+        errorMessage: '"tableName" should be string',
         inputData: tableName
-      }); 
- 
+      });
+
       const received = await createItem(docClient, body, path, header, tableName).catch(received => received);
       expect(JSON.parse(received)).toEqual(JSON.parse(expected))
     }
@@ -241,397 +261,353 @@ describe(`\n async function dbGateway(docClient, method, tableName,
   } = {}
 `, () => {
 
-  describe('GET', () => {
-    //ALL: should return an error object when method is not "get", "put", "delete", "query" or "scan"
-    //ALL: should return an error object when "tableName" is not a string
-    //ALL: should return an error object when "docClient" is not a DocumentClient
-    //ALL: should return an error object when "projectionExpression" is not undefined neither string
-    //ALL: should return an error object when "expressionAttributeNames" is not undefined neither string
-    //ALL: should return an error object when "filterExpression" is not undefined neither string
-    //ALL: should return an error object when "expressionAttributeNames" is not undefined but "expressionAttributeValues" is
+  describe('\n ALL', () => {
+    test('should return an error object when "docClient" is not a DocumentClient', async () => {
+      const docClient = class SomeWrongClass { };
 
-    //GET: should return an error object when path is empty
+      const tableName = 'tableName';
+      const method = 'any';
+      const dbParams = {};
 
-    //DELETE: should return an error object when path is empty
+      const expected = JSON.stringify({
+        statusCode: 400,
+        errorMessage: '"docClient" should be a DocumentClient',
+        inputData: docClient
+      });
 
-    //QUERY: should return an error object when keyConditionExpression is not a string
-    //QUERY: should return an error object when expressionAttributeValues is not an object
-    //QUERY: should return an error object when expressionAttributeValues is an empty object
+      const received = await dbGateway(docClient, method, tableName, dbParams).catch(received => received);
+      expect(JSON.parse(received)).toEqual(JSON.parse(expected))
+    })
 
-    //SCAN: should return an error object when filterExpression is not string
-    //SCAN: should return an error object when expressionAttributeValues is not string
-    //SCAN: should return an error object when expressionAttributeValues is not an object
-    //SCAN: should return an error object when expressionAttributeValues is an empty object
+    test('should return an error object when "projectionExpression" is not undefined neither string', async () => {
+      const tableName = 'tableName';
+      const method = 'any';
 
-    //PUT: should return an error object when body is not an object
-    //PUT: should return an error object when body is an empty object
-    //PUT: should return an error object when path is not an object
-    //PUT: should return an error object when path has no "changedBy" attribute
+      const projectionExpressions = [1, true, {}, () => { }, [], null];
 
+      for (let projectionExpression of projectionExpressions) {
+        const dbParams = { projectionExpression: projectionExpression };
 
+        const expected = JSON.stringify({
+          statusCode: 400,
+          errorMessage: '"projectionExpression" should be string or undefined',
+          inputData: projectionExpression
+        });
+
+        const received = await dbGateway(docClient, method, tableName, dbParams).catch(received => received);
+        expect(JSON.parse(received)).toEqual(JSON.parse(expected))
+      }
+    })
+
+    test('should return an error object when "expressionAttributeNames" is not undefined neither object', async () => {
+      const tableName = 'tableName';
+      const method = 'any';
+
+      const expressionAttributeNamesList = [1, true, '', () => { }, [], null];
+
+      for (let expressionAttributeNames of expressionAttributeNamesList) {
+        const dbParams = { expressionAttributeNames: expressionAttributeNames };
+
+        const expected = JSON.stringify({
+          statusCode: 400,
+          errorMessage: '"expressionAttributeNames" should be an object or undefined',
+          inputData: expressionAttributeNames
+        });
+
+        const received = await dbGateway(docClient, method, tableName, dbParams).catch(received => received);
+        expect(JSON.parse(received)).toEqual(JSON.parse(expected))
+      }
+    })
+  })
+
+  describe('\n GET', () => {
     test('should return a successful object when all input are valid', async () => {
       const method = 'get';
       const tableName = 'tableName';
-      const path = { id: 1 };
-      const header = { userId: 'userId' }
 
       const dbParams = {
         body: {},
-        path: { id: '1' },
+        path: { id: 'id' },
         header: {}
       }
 
       const expected = {
         statusCode: 200,
-        item: {}
+        item: { id: 'id', historic: [{ changedBy: 'changedBy' }] }
       }
 
-      const received = await dbGateway(docClient, method, tableName, dbParams).catch(() => fail())
-
+      const received = await dbGateway(docClient, method, tableName, dbParams).catch(received => received)
       expect(received).toEqual(expected)
-
-
     })
+    test('should return an error object when path is empty', async () => {
+      const method = 'get';
+      const tableName = 'tableName';
 
-    // test('should return a successful object when all input are valid', async () => {
-    //   const method = 'get';
-    //   const tableName = 'tableName';
-    //   const path = { id: 1 };
-    //   const header = { userId: 'userId' }
+      const dbParams = {
+        body: {},
+        path: {},
+        header: {}
+      }
 
-    //   const dbParams = {
-    //     body: {},
-    //     path: { id: '1' },
-    //     header: {}
-    //   }
+      const expected = JSON.stringify({
+        statusCode: 400,
+        errorMessage: '"path" should not be an empty object.',
+        inputData: dbParams.path
+      });
 
-    //   const expected = {
-    //     statusCode: 200,
-    //     item: {}
-    //   }
-
-    //   const received = await dbGateway(docClient, method, tableName, dbParams)
-    //     .catch(received => { fail(); return received })
-
-    //   expect(received).toEqual('expected')
-
-
-    // })
+      const received = await dbGateway(docClient, method, tableName, dbParams).catch(received => received);
+      expect(JSON.parse(received)).toEqual(JSON.parse(expected))
+    })
   })
 
-  //   test('should return a successful object when request is valid, object exists and Id = 2', async () => {
-  //     const event = { 
-  //       method: 'get',
-  //       tableName: 'tableName',
-  //       params: { path: { id: 2 }, header: { userId: 'userId' } }
-  //     }
+  describe('\n DELETE', () => {
+    test('should return a successful object when all input are valid', async () => {
+      const method = 'delete';
+      const tableName = 'tableName';
 
-  //     const expected = {
-  //       statusCode: 200,
-  //       item: {
-  //         id: 2,
-  //         name: 'Test 2'
-  //       }
-  //     }
-  //     const received = await handler(event);
-  //     expect(received).toEqual(expected)
-  //   })
+      const dbParams = {
+        body: {},
+        path: { id: 'id' },
+        header: {}
+      }
 
-  //   test('should return an empty object when request is valid and object does not exist', async () => {
-  //     const event = {
-  //       method: 'get',
-  //       tableName: 'tableName',
-  //       params: { path: { id: 3 }, header: { userId: 'userId' } }
-  //     }
+      const expected = {
+        statusCode: 200,
+      }
 
-  //     const expected = {
-  //       statusCode: 200,
-  //     }
-  //     const received = await handler(event);
-  //     expect(received).toEqual(expected)
-  //   })
-  // })
+      const received = await dbGateway(docClient, method, tableName, dbParams).catch(received => received)
+      expect(received).toEqual(expected)
+    })
+    test('should return an error object when path is empty', async () => {
+      const method = 'delete';
+      const tableName = 'tableName';
 
-  // describe('put method', () => {
-  //   test('should return an empty object when request is valid', async () => {
-  //     const event = {
-  //       method: 'put',
-  //       params: { path: { id: 1 }, header: { userId: 'userId' } },
-  //       body: { userId: '123456' },
-  //       tableName: 'tableName',
-  //       Item: {}
-  //     }
+      const dbParams = {
+        body: {},
+        path: {},
+        header: {}
+      }
 
-  //     const expected = {
-  //       statusCode: 200,
-  //     }
-  //     const received = await handler(event);
-  //     expect(received).toEqual(expected)
-  //   })
+      const expected = JSON.stringify({
+        statusCode: 400,
+        errorMessage: '"path" should not be an empty object.',
+        inputData: dbParams.path
+      });
 
-  //   test('should return an empty object when request is valid and primary key already exists', async () => {
-  //     const event = {
-  //       method: 'put',
-  //       params: { path: { id: 1 }, header: { userId: 'userId' } },
-  //       body: { userId: '123456' },
-  //       tableName: 'tableName',
-  //       item: { some: {} }
-  //     }
+      const received = await dbGateway(docClient, method, tableName, dbParams).catch(received => received);
+      expect(JSON.parse(received)).toEqual(JSON.parse(expected))
 
-  //     const expected = {
-  //       statusCode: 200,
-  //     }
+    })
+  })
 
-  //     const received = await handler(event);
-  //     expect(received).toEqual(expected)
-  //   })
-  // })
+  describe('\n QUERY', () => {
+    test('should return a successful object when all input are valid', async () => {
+      const method = 'query';
+      const tableName = 'tableName';
+      const dbParams = {
+        keyConditionExpression: 'keyConditionExpression',
+        expressionAttributeValues: { id: 'id' }
+      }
 
-  // describe('delete method', () => {
-  //   test('should return an empty object when request is valid', async () => {
-  //     const event = {
-  //       method: 'delete',
-  //       params: { path: { id: 23 }, header: { userId: 'userId' } },
-  //       tableName: 'tableName',
-  //     }
+      const expected = {
+        statusCode: 200,
+        items: [{ id: 'id', historic: [{ changedBy: 'changedBy' }] }],
+        count: 1,
+        scannedCount: 1
+      }
 
-  //     const expected = {
-  //       statusCode: 200
-  //     }
-  //     const received = await handler(event);
-  //     expect(received).toEqual(expected)
-  //   })
+      const received = await dbGateway(docClient, method, tableName, dbParams).catch(received => received)
+      expect(received.items[0].id).toEqual(expected.items[0].id)
+      expect(received.items[0].historic[0].changedBy).toEqual(expected.items[0].historic[0].changedBy)
+    })
 
-  //   test('should return an empty object when request is valid and primary key does not exist', async () => {
-  //     const event = {
-  //       method: 'delete',
-  //       params: { path: { id: 23 }, header: { userId: 'userId' } },
-  //       tableName: 'tableName',
-  //     }
+    test('should return an error object when keyConditionExpression is not a string', async () => {
+      const method = 'query';
+      const tableName = 'tableName';
+      const keyConditionExpressions = [1, true, {}, [], () => { }, undefined, null];
 
-  //     const expected = {
-  //       statusCode: 200
-  //     }
-  //     const received = await handler(event);
-  //     expect(received).toEqual(expected)
-  //   })
-  // })
+      for (let keyConditionExpression of keyConditionExpressions) {
+        const dbParams = {
+          body: {},
+          path: {},
+          header: {},
+          expressionAttributeValues: {},
+          keyConditionExpression: keyConditionExpression
+        }
 
-  // describe('query method', () => {
-  //   test('should return an successful object when request is valid and Id = 1', async () => {
-  //     const event = {
-  //       method: 'query',
-  //       params: { path: {}, header: { userId: 'userId' } },
-  //       tableName: 'tableName',
-  //       keyConditionExpression: 'Id = :id',
-  //       expressionAttributeValues: {
-  //         ':id': 1
-  //       },
-  //     }
+        const expected = JSON.stringify({
+          statusCode: 400,
+          errorMessage: 'keyConditionExpression attribute must have at least one character in query methods.',
+          inputData: dbParams.keyConditionExpression
+        });
 
-  //     const expected = { items: [{ id: 1, name: 'Test 1' }], count: 1, scannedCount: 1, statusCode: 200 }
-  //     const received = await handler(event);
-  //     expect(received).toEqual(expected)
-  //   })
+        const received = await dbGateway(docClient, method, tableName, dbParams).catch(received => received);
+        expect(JSON.parse(received)).toEqual(JSON.parse(expected))
+      }
+    })
 
-  //   test('should return an successful object when request is valid and Id = 2', async () => {
-  //     const event = {
-  //       method: 'query',
-  //       params: { path: {}, header: { userId: 'userId' } },
-  //       tableName: 'tableName',
-  //       keyConditionExpression: 'Id = :id',
-  //       expressionAttributeValues: {
-  //         ':id': 2
-  //       },
-  //     }
+    test('should return an error object when expressionAttributeValues is not an object', async () => {
+      const method = 'query';
+      const tableName = 'tableName';
+      const expressionAttributeValuesList = [1, true, '', [], () => { }, undefined, null];
 
-  //     const expected = {
-  //       items: [{ id: 2, name: 'Test 2' }],
-  //       count: 1,
-  //       scannedCount: 1,
-  //       statusCode: 200
-  //     }
-  //     const received = await handler(event);
-  //     expect(received).toEqual(expected)
-  //   })
+      for (let expressionAttributeValues of expressionAttributeValuesList) {
+        const dbParams = {
+          body: {},
+          path: {},
+          header: {},
+          keyConditionExpression: 'keyConditionExpression',
+          expressionAttributeValues: expressionAttributeValues
+        }
 
-  //   test('should return an success object when request is valid and primary key does not exist', async () => {
-  //     const event = {
-  //       method: 'query',
-  //       params: { path: {}, header: { userId: 'userId' } },
-  //       tableName: 'tableName',
-  //       keyConditionExpression: 'Id = :id',
-  //       expressionAttributeValues: {
-  //         ':id': 3
-  //       },
-  //     }
+        const expected = JSON.stringify({
+          statusCode: 400,
+          errorMessage: 'expressionAttributeValues attribute must be an object in query methods.',
+          inputData: dbParams.expressionAttributeValues
+        });
 
-  //     const expected = { items: [], count: 0, scannedCount: 0, statusCode: 200 }
-  //     const received = await handler(event);
-  //     expect(received).toEqual(expected)
-  //   })
-  // })
+        const received = await dbGateway(docClient, method, tableName, dbParams).catch(received => received);
+        expect(JSON.parse(received)).toEqual(JSON.parse(expected))
+      }
+    })
 
-  // describe('scan method', () => {
-  //   test('should return an successful object when request is valid', async () => {
-  //     const event = {
-  //       method: 'scan',
-  //       tableName: 'tableName',
-  //       params: { path: {}, header: { userId: 'userId' } },
-  //     }
+    test('should return an error object when expressionAttributeValues is an empty object', async () => {
+      const method = 'query';
+      const tableName = 'tableName';
+      const expressionAttributeValues = {};
 
-  //     const expected = {
-  //       statusCode: 200,
-  //       items: [
-  //         { id: 1, name: 'Test 1' },
-  //         { id: 2, name: 'Test 2' },
-  //       ],
-  //       count: 2,
-  //       scannedCount: 2
-  //     }
-  //     const received = await handler(event);
-  //     expect(received).toEqual(expected)
-  //   })
-  // })
+      const dbParams = {
+        body: {},
+        path: {},
+        header: {},
+        keyConditionExpression: 'keyConditionExpression',
+        expressionAttributeValues: expressionAttributeValues
+      }
 
-  // describe('errors', () => {
-  //   test('should return an error object when event.method is not "get", "put", "delete", "query" or "scan"', async () => {
-  //     const methods = [1, 's', true, null, [], () => { }];
+      const expected = JSON.stringify({
+        statusCode: 400,
+        errorMessage: 'expressionAttributeValues attribute must not be an empty object in query methods.',
+        inputData: dbParams.expressionAttributeValues
+      });
 
-  //     for (let method of methods) {
-  //       const event = {
-  //         method: method,
-  //         params: { path: {}, header: { userId: 'userId' } },
-  //       }
-  //       const expected = JSON.stringify({
-  //         inputData: event,
-  //         errorMessage: 'method attribute must be "get", "put", "delete", "query" or "scan".',
-  //         statusCode: 400
-  //       })
+      const received = await dbGateway(docClient, method, tableName, dbParams).catch(received => received);
+      expect(JSON.parse(received)).toEqual(JSON.parse(expected))
+    })
+  })
 
-  //       try { await handler(event) } catch (received) { expect(received).toEqual(expected) }
-  //     }
-  //   })
+  describe('\n SCAN', () => {
+    test('should return a successful object when all input are valid', async () => {
+      const method = 'scan';
+      const tableName = 'tableName';
+      const dbParams = {
+        filterExpression: 'filterExpression',
+        expressionAttributeValues: { id: 'id' }
+      }
 
+      const expected = {
+        statusCode: 200,
+        items: [{ id: 'id', historic: [{ changedBy: 'changedBy' }] }],
+        count: 1,
+        scannedCount: 1
+      }
 
-  //   test('should return an error object when event.tableName is not typeof string', async () => {
-  //     const tableNames = [1, true, null, [], () => { }, {}];
+      const received = await dbGateway(docClient, method, tableName, dbParams).catch(received => received)
+      expect(received.items[0].id).toEqual(expected.items[0].id)
+      expect(received.items[0].historic[0].changedBy).toEqual(expected.items[0].historic[0].changedBy)
+    })
 
-  //     for (let tableName of tableNames) {
-  //       const event = {
-  //         method: 'get',
-  //         tableName: tableName,
-  //         params: { path: {}, header: { userId: 'userId' } },
-  //       }
-  //       const expected = JSON.stringify({
-  //         inputData: event,
-  //         errorMessage: 'tableName attribute must be a string.',
-  //         statusCode: 400
-  //       })
-  //       try { await handler(event) } catch (received) { expect(received).toEqual(expected) }
-  //     }
-  //   })
+    test('should return an error object when filterExpression is not string', async () => {
+      const method = 'scan';
+      const tableName = 'tableName';
+      const filterExpressionList = [1, true, {}, [], () => { }, undefined, null];
+
+      for (let filterExpression of filterExpressionList) {
+        const dbParams = {
+          body: {},
+          path: {},
+          header: {},
+          filterExpression: filterExpression
+        }
+
+        const expected = JSON.stringify({
+          statusCode: 400,
+          errorMessage: 'filterExpression attribute must be a string in scan methods.',
+          inputData: dbParams.filterExpression
+        });
+
+        const received = await dbGateway(docClient, method, tableName, dbParams).catch(received => received);
+        expect(JSON.parse(received)).toEqual(JSON.parse(expected))
+      }
+    })
+
+    test('should return an error object when expressionAttributeValues is not an object', async () => {
+      const method = 'scan';
+      const tableName = 'tableName';
+      const expressionAttributeValuesList = [1, true, '', [], () => { }, undefined, null];
+
+      for (let expressionAttributeValues of expressionAttributeValuesList) {
+        const dbParams = {
+          body: {},
+          path: {},
+          header: {},
+          filterExpression: 'filterExpression',
+          expressionAttributeValues: expressionAttributeValues
+        }
+
+        const expected = JSON.stringify({
+          statusCode: 400,
+          errorMessage: 'expressionAttributeValues attribute must be an object in scan methods.',
+          inputData: dbParams.expressionAttributeValues
+        });
+
+        const received = await dbGateway(docClient, method, tableName, dbParams).catch(received => received);
+        expect(JSON.parse(received)).toEqual(JSON.parse(expected))
+      }
+    })
 
 
-  //   test('should return an error object when event.item is not an empty object and method = put', async () => {
-  //     const items = [1, true, null, [], () => { }, 's', undefined, {}];
+    test('should return an error object when expressionAttributeValues is an empty object', async () => {
+      const method = 'scan';
+      const tableName = 'tableName';
+      const expressionAttributeValues = {};
 
-  //     for (let item of items) {
-  //       const event = {
-  //         method: 'put',
-  //         params: { path: {}, header: { userId: 'userId' } },
-  //         tableName: 'tableName',
-  //         item: item
-  //       }
-  //       const expected = JSON.stringify({
-  //         inputData: event,
-  //         errorMessage: 'item should not be empty.',
-  //         statusCode: 400
-  //       })
-  //       try { await handler(event) } catch (received) { expect(received).toEqual(expected) }
-  //     }
-  //   })
+      const dbParams = {
+        body: {},
+        path: {},
+        header: {},
+        filterExpression: 'filterExpression',
+        expressionAttributeValues: expressionAttributeValues
+      }
 
-  //   test('should return an error object when event.keyConditionExpression is not a zero length string in query methods', async () => {
-  //     const keyConditionExpressions = [1, true, null, [], () => { }, '', {}];
+      const expected = JSON.stringify({
+        statusCode: 400,
+        errorMessage: 'expressionAttributeValues attribute must not be an empty object in scan methods.',
+        inputData: dbParams.expressionAttributeValues
+      });
 
-  //     for (let keyConditionExpression of keyConditionExpressions) {
-  //       const event = {
-  //         method: 'query',
-  //         params: { path: {}, header: { userId: 'userId' } },
-  //         tableName: 'tableName',
-  //         keyConditionExpression: keyConditionExpression,
-  //         expressionAttributeValues: {},
-  //       }
-  //       const expected = JSON.stringify({
-  //         inputData: event,
-  //         errorMessage: 'keyConditionExpression attribute must have at least one character in put methods.',
-  //         statusCode: 400
-  //       })
-  //       try { await handler(event) } catch (received) { expect(received).toEqual(expected) }
-  //     }
-  //   })
+      const received = await dbGateway(docClient, method, tableName, dbParams).catch(received => received);
+      expect(JSON.parse(received)).toEqual(JSON.parse(expected))
+    })
+  })
 
-  //   test('should return an error object when event.expressionAttributeValues is not an object in query methods', async () => {
-  //     const expressionAttributeValues = [1, true, null, [], () => { }, '', undefined];
+  describe('\n PUT', () => {
+    test('should return a successful object when all input are valid', async () => {
+      const method = 'put';
+      const tableName = 'tableName';
+      const dbParams = {
+        body: { key: 'value' },
+        path: { id: '1' },
+        header: { changedBy: 'changedBy' }
+      }
 
-  //     for (let expressionAttributeValue of expressionAttributeValues) {
-  //       const event = {
-  //         method: 'query',
-  //         params: { path: {}, header: { userId: 'userId' } },
-  //         tableName: 'tableName',
-  //         expressionAttributeValues: expressionAttributeValue,
-  //         ExpressionAttributeNames: {},
-  //         keyConditionExpression: 's'
-  //       }
-  //       const expected = JSON.stringify({
-  //         inputData: event,
-  //         errorMessage: 'expressionAttributeValues attribute must be an object in query methods.',
-  //         statusCode: 400
-  //       })
-  //       try { await handler(event) } catch (received) { expect(received).toEqual(expected) }
-  //     }
-  //   })
+      const expected = {
+        statusCode: 200,
+      }
 
-  //   // test.only('should return an error object when some goes wrong on the database', async () => {
-  //   //   const event = {
-  //   //     method: 'get',
-  //   //     params: { path: { key: 'value' }, header: { userId: 'userId' } },
-  //   //     error: true,
-  //   //     tableName: 'tableName',
-  //   //   }
-
-  //   //   const expected = {
-  //   //     inputData: event,
-  //   //     errorMessage: 'errorMessage.',
-  //   //     statusCode: 'statusCode'
-  //   //   }
-  //   //   const [_, received] = await handler(event);
-  //   //   expect(received).toEqual(expected)
-  //   //   // handler(event).then(() => fail()).catch(received => expect(received).toEqual(expected));
-  //   // })
-
-  // })
-
-  // describe('createItem', () => {
-  //   // test('should return an successful object when request is valid', async () => {
-  //   //   const event = {
-  //   //     method: 'scan',
-  //   //     tableName: 'tableName',
-  //   //     params: { path: {} },
-  //   //   }
-
-  //   //   const expected = {
-  //   //     items: [
-  //   //       { id: 1, name: 'Test 1' },
-  //   //       { id: 2, name: 'Test 2' },
-  //   //     ],
-  //   //     count: 2,
-  //   //     scannedCount: 2
-  //   //   }
-  //   //   const [_, received] = await handler(event);
-  //   //   expect(received).toEqual(expected)
-  //   // })
+      const received = await dbGateway(docClient, method, tableName, dbParams).catch(received => received)
+      expect(received).toEqual(expected)
+    })
+  })
 })
 
 

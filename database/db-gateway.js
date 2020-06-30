@@ -16,30 +16,47 @@ const dbGateway = async function dbGateway(docClient, method, tableName,
   } = {}
 ) {
 
+  if (!isClassOf(docClient, 'DocumentClient'))
+    throwErrorResponseModel(docClient, '"docClient" should be a DocumentClient');
+
+  if (!(projectionExpression === undefined || typeof projectionExpression == 'string'))
+    throwErrorResponseModel(projectionExpression, '"projectionExpression" should be string or undefined');
+
+  if (!(expressionAttributeNames === undefined || isObject(expressionAttributeNames)))
+    throwErrorResponseModel(expressionAttributeNames, '"expressionAttributeNames" should be an object or undefined');
 
   if (!(method == 'get' || method == 'put' || method == 'delete' || method == 'scan' || method == 'query'))
     throwErrorResponseModel(method, 'method attribute must be "get", "put", "delete", "query" or "scan".')
 
-  if (typeof tableName != 'string')
-    throwErrorResponseModel(tableName, 'tableName attribute must be a string.')
-
-  const key = path;
-  if ((method == 'get' || method == 'delete') && isEmptyObject(key))
-    throwErrorResponseModel(key, 'key should not be empty.')
+  if ((method == 'get' || method == 'delete') && isEmptyObject(path))
+    throwErrorResponseModel(path, '"path" should not be an empty object.')
 
   if (method == 'query' && !(typeof keyConditionExpression == 'string' && keyConditionExpression.length != 0))
-    throwErrorResponseModel(keyConditionExpression, 'keyConditionExpression attribute must have at least one character in put methods.');
+    throwErrorResponseModel(keyConditionExpression, 'keyConditionExpression attribute must have at least one character in query methods.');
 
   if (method == 'query' && !isObject(expressionAttributeValues))
     throwErrorResponseModel(expressionAttributeValues, 'expressionAttributeValues attribute must be an object in query methods.');
 
+  if (method == 'query' && isEmptyObject(expressionAttributeValues))
+    throwErrorResponseModel(expressionAttributeValues, 'expressionAttributeValues attribute must not be an empty object in query methods.');
+
+  if (method == 'scan' && typeof filterExpression != 'string')
+    throwErrorResponseModel(filterExpression, 'filterExpression attribute must be a string in scan methods.');
+
+  if (method == 'scan' && !isObject(expressionAttributeValues))
+    throwErrorResponseModel(expressionAttributeValues, 'expressionAttributeValues attribute must be an object in scan methods.');
+
+  if (method == 'scan' && isEmptyObject(expressionAttributeValues))
+    throwErrorResponseModel(expressionAttributeValues, 'expressionAttributeValues attribute must not be an empty object in scan methods.');
+
+
   let item;
   if (method == 'put')
-    item = await this.createItem(docClient, body, path, header, tableName);
+    item = await createItem(docClient, body, path, header, tableName);
 
   const dbParams = {
     TableName: tableName,
-    Key: key,
+    Key: path,
     Item: item,
     ProjectionExpression: projectionExpression,
     KeyConditionExpression: keyConditionExpression,
@@ -98,6 +115,9 @@ const createItem = async function createItem(docClient, body, path, header, tabl
 
   if (isEmptyObject(body))
     throwErrorResponseModel(body, '"body" should not be empty');
+
+  if (!isObject(path))
+    throwErrorResponseModel(path, '"path" should be an object');
 
   if (!isObject(header))
     throwErrorResponseModel(header, '"header" should be an object');

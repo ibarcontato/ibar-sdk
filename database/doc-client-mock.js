@@ -13,7 +13,6 @@ const docClientError = {
   // time:Mon Jun 29 2020 08:47:14 GMT-030
 };
 
-const item = { id: 'id' };
 
 module.exports = class DocumentClient {
   constructor(isError) {
@@ -23,34 +22,33 @@ module.exports = class DocumentClient {
   get(dbParams) {
     return {
       promise: () => {
+        const item = { id: 'id', historic: [{ changedBy: 'changedBy' }] };
         const returnedItem = dbParams && dbParams.Key && dbParams.Key.id == 'id' ? item : {};
         return this.isError
-        ? Promise.reject(docClientError)
-        : Promise.resolve({ Item: returnedItem })
+          ? Promise.reject(docClientError)
+          : Promise.resolve({ Item: returnedItem })
       }
-      
+
     }
   }
 
   query(dbParams) {
-
+    const item = { id: 'id', historic: [{ changedBy: 'changedBy' }] };
+    const returnedItem = dbParams && dbParams.ExpressionAttributeValues && dbParams.ExpressionAttributeValues.id == 'id' ? item : {};
     return {
-      promise: () => this.isError ? Promise.reject(docClientError) : Promise.resolve({
-        Items: [{}],
-        Count: 1,
-        ScannedCount: 1
-      })
+      promise: () => this.isError
+        ? Promise.reject(docClientError)
+        : Promise.resolve({ Items: [returnedItem], Count: 1, ScannedCount: 1 })
     }
   }
 
   scan(dbParams) {
-
+    const item = { id: 'id', historic: [{ changedBy: 'changedBy' }] };
+    const returnedItem = dbParams && dbParams.ExpressionAttributeValues && dbParams.ExpressionAttributeValues.id == 'id' ? item : {};
     return {
-      promise: () => this.isError ? Promise.reject(docClientError) : Promise.resolve({
-        Items: [{}],
-        Count: 1,
-        ScannedCount: 1
-      })
+      promise: () => this.isError
+        ? Promise.reject(docClientError)
+        : Promise.resolve({ Items: [returnedItem], Count: 1, ScannedCount: 1 })
     }
   };
 
