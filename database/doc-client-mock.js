@@ -20,10 +20,10 @@ module.exports = class DocumentClient {
   }
 
   get(dbParams) {
-    return {
+    return { 
       promise: () => {
         const item = { id: 'id', historic: [{ changedBy: 'changedBy' }] };
-        const returnedItem = dbParams && dbParams.Key && dbParams.Key.id == 'id' ? item : {};
+        const returnedItem = dbParams && dbParams.Key && dbParams.Key.id == 'id' ? item : undefined;
         return this.isError
           ? Promise.reject(docClientError)
           : Promise.resolve({ Item: returnedItem })
