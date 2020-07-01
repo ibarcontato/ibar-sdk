@@ -1,7 +1,7 @@
 const  isEmptyObject  = require('./is-empty-object');
 
 describe('isEmptyObject = (object)', () => {
-  test('should return true when object is an empty object', async () => {
+  test('should return true when object is empty object', async () => {
     const expected = true;
     const object = {};
 

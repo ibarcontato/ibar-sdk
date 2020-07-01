@@ -3,12 +3,12 @@ const  isObject  = require('../validations/is-object');
 
 exports.createInvokeParams = (functionName, method, tableName, stage = 'dev', dbParams = {}) => {
   const inputData = { functionName, method, tableName, stage, dbParams };
-  if (typeof functionName != 'string') throw JSON.stringify(new ErrorResponseModel(inputData, '"functionName" should be a string.', 400));
-  if (typeof method != 'string') throw JSON.stringify(new ErrorResponseModel(inputData, '"method" should be a string.', 400));
-  if (typeof tableName != 'string') throw JSON.stringify(new ErrorResponseModel(inputData, '"tableName" should be a string.', 400));
+  if (typeof functionName != 'string') throw JSON.stringify(new ErrorResponseModel(inputData, '"functionName" should be string.', 400));
+  if (typeof method != 'string') throw JSON.stringify(new ErrorResponseModel(inputData, '"method" should be string.', 400));
+  if (typeof tableName != 'string') throw JSON.stringify(new ErrorResponseModel(inputData, '"tableName" should be string.', 400));
   if (typeof stage != 'string' && stage !== undefined)
-  throw JSON.stringify(new ErrorResponseModel(inputData, '"stage" should be a string or undefined.', 400));
-  if (!isObject(dbParams)) throw JSON.stringify(new ErrorResponseModel(inputData, '"dbParams" should be an object or undefined.', 400));
+  throw JSON.stringify(new ErrorResponseModel(inputData, '"stage" should be string or undefined.', 400));
+  if (!isObject(dbParams)) throw JSON.stringify(new ErrorResponseModel(inputData, '"dbParams" should be object or undefined.', 400));
 
   const payload = {
     tableName: tableName,

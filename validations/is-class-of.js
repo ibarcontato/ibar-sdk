@@ -4,4 +4,4 @@ module.exports = function isClassOf(obj, className) {
   } catch (_) {
     return false;
   }
-}
+}  

@@ -56,7 +56,7 @@ describe('createInvokeParams = (functionName, method, tableName, stage = "dev", 
       if (typeof functionName == 'function') inputData.functionName = undefined;
 
       const expected = {
-        errorMessage: '"functionName" should be a string.',
+        errorMessage: '"functionName" should be string.',
         statusCode: 400,
         inputData: inputData
       };
@@ -78,7 +78,7 @@ describe('createInvokeParams = (functionName, method, tableName, stage = "dev", 
       if (typeof method == 'function') inputData.method = undefined;
 
       const expected = {
-        errorMessage: '"method" should be a string.',
+        errorMessage: '"method" should be string.',
         statusCode: 400,
         inputData: inputData
       };
@@ -102,7 +102,7 @@ describe('createInvokeParams = (functionName, method, tableName, stage = "dev", 
       };
 
       const expected = {
-        errorMessage: '"tableName" should be a string.',
+        errorMessage: '"tableName" should be string.',
         statusCode: 400,
         inputData: inputData
       };
@@ -129,7 +129,7 @@ describe('createInvokeParams = (functionName, method, tableName, stage = "dev", 
       if (typeof inputData.stage == 'function') inputData.stage = undefined;
 
       const expected = {
-        errorMessage: '"stage" should be a string or undefined.',
+        errorMessage: '"stage" should be string or undefined.',
         statusCode: 400,
         inputData: inputData
       };
@@ -151,7 +151,7 @@ describe('createInvokeParams = (functionName, method, tableName, stage = "dev", 
 
       const expected = JSON.stringify({
         inputData: typeof inputData == 'function' ? undefined : inputData,
-        errorMessage: '"dbParams" should be an object or undefined.',
+        errorMessage: '"dbParams" should be object or undefined.',
         statusCode: 400,
       });
 

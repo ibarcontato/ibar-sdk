@@ -12,7 +12,7 @@ describe('\n function dbGateway(docClient, tableName)', () => {
 
     const expected = JSON.stringify({
       statusCode: 400,
-      errorMessage: '"docClient" should be a DocumentClient.',
+      errorMessage: '"docClient" should be DocumentClient.',
       inputData: docClient
     });
 
@@ -29,7 +29,7 @@ describe('\n function dbGateway(docClient, tableName)', () => {
     for (let tableName of tableNames) {
       const expected = JSON.stringify({
         statusCode: 400,
-        errorMessage: '"tableName" should be a string.',
+        errorMessage: '"tableName" should be string.',
         inputData: tableName
       });
 
@@ -44,7 +44,7 @@ describe('\n function dbGateway(docClient, tableName)', () => {
 describe('\n _doRequest = async function (method, dbParams)', () => {
   test('should return an error object when "method" is invalid', async () => {
     const methods = [1, '', {}, null, undefined, [], () => { }];
-    const dbParams = {};
+    const dbParams = { key: 'value'};
     const tableName = 'tableName';
 
     for (let method of methods) {
@@ -66,7 +66,7 @@ describe('\n _doRequest = async function (method, dbParams)', () => {
     for (let dbParams of dbParamsList) {
       const expected = JSON.stringify({
         statusCode: 400,
-        errorMessage: '"dbParams" should be an object.',
+        errorMessage: '"dbParams" should be object.',
         inputData: dbParams
       });
       const received = await dbGateway(docClient, tableName)._doRequest(method, dbParams).catch(received => received)
@@ -74,14 +74,14 @@ describe('\n _doRequest = async function (method, dbParams)', () => {
     }
   })
 
-  test('should return an error object when "dbParams" is an empty object', async () => {
+  test('should return an error object when "dbParams" is empty object', async () => {
     const method = 'get';
     const dbParams = {};
     const tableName = 'tableName';
 
     const expected = JSON.stringify({
       statusCode: 400,
-      errorMessage: '"dbParams" should not be an empty object.',
+      errorMessage: '"dbParams" should not be empty object.',
       inputData: dbParams
     });
     const received = await dbGateway(docClient, tableName)._doRequest(method, dbParams).catch(received => received)
@@ -98,7 +98,7 @@ describe('\n _getUpdatedHistoric = function (actualItem, changedBy)', () => {
     for (let changedBy of changedByList) {
       const expected = JSON.stringify({
         statusCode: 400,
-        errorMessage: '"changedBy" should be a string.',
+        errorMessage: '"changedBy" should be string.',
         inputData: changedBy
       });
 
@@ -119,7 +119,7 @@ describe('\n _getUpdatedHistoric = function (actualItem, changedBy)', () => {
     for (let actualItem of actualItemList) {
       const expected = JSON.stringify({
         statusCode: 400,
-        errorMessage: '"actualItem" should be an object.',
+        errorMessage: '"actualItem" should be object.',
         inputData: actualItem
       });
 
@@ -132,14 +132,14 @@ describe('\n _getUpdatedHistoric = function (actualItem, changedBy)', () => {
     }
   })
 
-  test('should return an error object when "actualItem" is an empty object', async () => {
+  test('should return an error object when "actualItem" is empty object', async () => {
     const changedBy = 'changedBy';
     const actualItem = {};
     const tableName = 'tableName';
 
     const expected = JSON.stringify({
       statusCode: 400,
-      errorMessage: '"actualItem" should not be an empty object.',
+      errorMessage: '"actualItem" should not be empty object.',
       inputData: actualItem
     });
 
@@ -200,7 +200,7 @@ describe('\n get = async function ({ keys, projectionExpression })', () => {
 
       const expected = JSON.stringify({
         statusCode: 400,
-        errorMessage: '"keys" should be an object.',
+        errorMessage: '"keys" should be object.',
         inputData: keys
       });
 
@@ -209,7 +209,7 @@ describe('\n get = async function ({ keys, projectionExpression })', () => {
     }
   })
 
-  test('should return an error object when "keys" is an empty object', async () => {
+  test('should return an error object when "keys" is empty object', async () => {
     const tableName = 'tableName';
     const keys = {};
 
@@ -219,7 +219,7 @@ describe('\n get = async function ({ keys, projectionExpression })', () => {
 
     const expected = JSON.stringify({
       statusCode: 400,
-      errorMessage: '"keys" should not be an empty object.',
+      errorMessage: '"keys" should not be empty object.',
       inputData: keys
     });
 
@@ -240,7 +240,7 @@ describe('\n get = async function ({ keys, projectionExpression })', () => {
 
       const expected = JSON.stringify({
         statusCode: 400,
-        errorMessage: '"projectionExpression" should be a string or undefined',
+        errorMessage: '"projectionExpression" should be string or undefined',
         inputData: projectionExpression
       });
 
@@ -278,7 +278,7 @@ describe('\n del = async function ({ keys })', () => {
 
       const expected = JSON.stringify({
         statusCode: 400,
-        errorMessage: '"keys" should be an object.',
+        errorMessage: '"keys" should be object.',
         inputData: keys
       });
 
@@ -287,7 +287,7 @@ describe('\n del = async function ({ keys })', () => {
     }
   })
 
-  test('should return an error object when "keys" is an empty object', async () => {
+  test('should return an error object when "keys" is empty object', async () => {
     const tableName = 'tableName';
     const keys = {};
 
@@ -297,7 +297,7 @@ describe('\n del = async function ({ keys })', () => {
 
     const expected = JSON.stringify({
       statusCode: 400,
-      errorMessage: '"keys" should not be an empty object.',
+      errorMessage: '"keys" should not be empty object.',
       inputData: keys
     });
 
@@ -349,7 +349,7 @@ describe('\n query = async function ({ keyConditionExpression, expressionAttribu
 
       const expected = JSON.stringify({
         statusCode: 400,
-        errorMessage: '"keyConditionExpression" should be a string.',
+        errorMessage: '"keyConditionExpression" should be string.',
         inputData: keyConditionExpression
       });
 
@@ -375,7 +375,7 @@ describe('\n query = async function ({ keyConditionExpression, expressionAttribu
 
       const expected = JSON.stringify({
         statusCode: 400,
-        errorMessage: '"expressionAttributeValues" should be an object.',
+        errorMessage: '"expressionAttributeValues" should be object.',
         inputData: expressionAttributeValues
       });
 
@@ -384,7 +384,7 @@ describe('\n query = async function ({ keyConditionExpression, expressionAttribu
     }
   })
 
-  test('should return an error object when "expressionAttributeValues" is an empty object', async () => {
+  test('should return an error object when "expressionAttributeValues" is empty object', async () => {
     const keyConditionExpression = '';
     const expressionAttributeNames = { key: 'value' };
     const projectionExpression = '';
@@ -400,7 +400,7 @@ describe('\n query = async function ({ keyConditionExpression, expressionAttribu
 
     const expected = JSON.stringify({
       statusCode: 400,
-      errorMessage: '"expressionAttributeValues" should not be an empty object.',
+      errorMessage: '"expressionAttributeValues" should not be empty object.',
       inputData: expressionAttributeValues
     });
 
@@ -425,7 +425,7 @@ describe('\n query = async function ({ keyConditionExpression, expressionAttribu
 
       const expected = JSON.stringify({
         statusCode: 400,
-        errorMessage: '"projectionExpression" should be a string or undefined.',
+        errorMessage: '"projectionExpression" should be string or undefined.',
         inputData: projectionExpression
       });
 
@@ -451,7 +451,7 @@ describe('\n query = async function ({ keyConditionExpression, expressionAttribu
 
       const expected = JSON.stringify({
         statusCode: 400,
-        errorMessage: '"expressionAttributeNames" should be an object or undefined.',
+        errorMessage: '"expressionAttributeNames" should be object or undefined.',
         inputData: expressionAttributeNames
       });
 
@@ -460,7 +460,7 @@ describe('\n query = async function ({ keyConditionExpression, expressionAttribu
     }
   })
 
-  test('should return an error object when "expressionAttributeNames" is an empty object', async () => {
+  test('should return an error object when "expressionAttributeNames" is empty object', async () => {
     const keyConditionExpression = '';
     const expressionAttributeValues = { key: 'value' };
     const projectionExpression = '';
@@ -476,7 +476,7 @@ describe('\n query = async function ({ keyConditionExpression, expressionAttribu
 
     const expected = JSON.stringify({
       statusCode: 400,
-      errorMessage: '"expressionAttributeNames" should not be an empty object.',
+      errorMessage: '"expressionAttributeNames" should not be empty object.',
       inputData: expressionAttributeNames
     });
 
@@ -528,7 +528,7 @@ describe('\n scan = async function ({ filterExpression, expressionAttributeValue
 
       const expected = JSON.stringify({
         statusCode: 400,
-        errorMessage: '"filterExpression" should be a string.',
+        errorMessage: '"filterExpression" should be string.',
         inputData: filterExpression
       });
 
@@ -554,7 +554,7 @@ describe('\n scan = async function ({ filterExpression, expressionAttributeValue
 
       const expected = JSON.stringify({
         statusCode: 400,
-        errorMessage: '"expressionAttributeValues" should be an object.',
+        errorMessage: '"expressionAttributeValues" should be object.',
         inputData: expressionAttributeValues
       });
 
@@ -563,7 +563,7 @@ describe('\n scan = async function ({ filterExpression, expressionAttributeValue
     }
   })
 
-  test('should return an error object when "expressionAttributeValues" is an empty object', async () => {
+  test('should return an error object when "expressionAttributeValues" is empty object', async () => {
     const filterExpression = '';
     const expressionAttributeNames = { key: 'value' };
     const projectionExpression = '';
@@ -579,7 +579,7 @@ describe('\n scan = async function ({ filterExpression, expressionAttributeValue
 
     const expected = JSON.stringify({
       statusCode: 400,
-      errorMessage: '"expressionAttributeValues" should not be an empty object.',
+      errorMessage: '"expressionAttributeValues" should not be empty object.',
       inputData: expressionAttributeValues
     });
 
@@ -604,7 +604,7 @@ describe('\n scan = async function ({ filterExpression, expressionAttributeValue
 
       const expected = JSON.stringify({
         statusCode: 400,
-        errorMessage: '"projectionExpression" should be a string or undefined.',
+        errorMessage: '"projectionExpression" should be string or undefined.',
         inputData: projectionExpression
       });
 
@@ -630,7 +630,7 @@ describe('\n scan = async function ({ filterExpression, expressionAttributeValue
 
       const expected = JSON.stringify({
         statusCode: 400,
-        errorMessage: '"expressionAttributeNames" should be an object or undefined.',
+        errorMessage: '"expressionAttributeNames" should be object or undefined.',
         inputData: expressionAttributeNames
       });
 
@@ -639,7 +639,7 @@ describe('\n scan = async function ({ filterExpression, expressionAttributeValue
     }
   })
 
-  test('should return an error object when "expressionAttributeNames" is an empty object', async () => {
+  test('should return an error object when "expressionAttributeNames" is empty object', async () => {
     const filterExpression = '';
     const expressionAttributeValues = { key: 'value' };
     const projectionExpression = '';
@@ -655,7 +655,7 @@ describe('\n scan = async function ({ filterExpression, expressionAttributeValue
 
     const expected = JSON.stringify({
       statusCode: 400,
-      errorMessage: '"expressionAttributeNames" should not be an empty object.',
+      errorMessage: '"expressionAttributeNames" should not be empty object.',
       inputData: expressionAttributeNames
     });
 
@@ -701,7 +701,7 @@ describe('\n put = async function ({ updateObject, keys, changedBy })', () => {
 
       const expected = JSON.stringify({
         statusCode: 400,
-        errorMessage: '"updateObject" should be an object.',
+        errorMessage: '"updateObject" should be object.',
         inputData: updateObject
       });
 
@@ -710,7 +710,7 @@ describe('\n put = async function ({ updateObject, keys, changedBy })', () => {
     }
   })
 
-  test('should return an error object when "updateObject" is an empty object', async () => {
+  test('should return an error object when "updateObject" is empty object', async () => {
     const keys = { id: 'id' };
     const changedBy = 'changedBy';
     const tableName = 'tableName';
@@ -724,7 +724,7 @@ describe('\n put = async function ({ updateObject, keys, changedBy })', () => {
 
     const expected = JSON.stringify({
       statusCode: 400,
-      errorMessage: '"updateObject" should not be an empty object.',
+      errorMessage: '"updateObject" should not be empty object.',
       inputData: updateObject
     });
 
@@ -746,11 +746,12 @@ describe('\n put = async function ({ updateObject, keys, changedBy })', () => {
 
     const expected = JSON.stringify({
       statusCode: 400,
-      errorMessage: '"actualItem" should be an object.',
+      errorMessage: '"actualItem" should be object.',
       inputData: keys 
     });
 
     const received = await dbGateway(docClient, tableName).put(dbParams).catch(received => received)
-    expect(JSON.parse(received)).toEqual(JSON.parse(expected))
+    expect(JSON.parse(received).statusCode).toEqual(JSON.parse(expected).statusCode)
+    expect(JSON.parse(received).errorMessage).toEqual(JSON.parse(expected).errorMessage)
   })
 })

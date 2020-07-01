@@ -21,3 +21,10 @@ exports.database = {
   dbGateway: require('./database/db-gateway')
 }
 
+exports.throws = {
+  throwIfIsNotObject: require('./throws/throw-if-is-not-object'),
+  throwIfIsNotClassOf: require('./throws/throw-if-is-not-class-of'),
+  throwIfIsNotString: require('./throws/throw-if-is-not-string'),
+  throwIfIsEmptyObject: require('./throws/throw-if-is-empty-object')
+}
+

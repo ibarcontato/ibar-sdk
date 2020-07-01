@@ -1,7 +1,7 @@
 const { isEmptyString } = require('./is-empty-string');
 
 describe('isEmptyString = (string)', () => {
-  test('should return true when string is an empty', async () => {
+  test('should return true when string is empty', async () => {
     const expected = true;
     const string = '';
 

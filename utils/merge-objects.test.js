@@ -51,7 +51,7 @@ describe('mergeObjects = (actualObject, newObject)', () => {
     const newObject = {};
 
     for (let actualObject of actualObjects) {
-      const expected = new ErrorResponseModel(actualObject, 'actualObject should be an object.', 400);
+      const expected = new ErrorResponseModel(actualObject, 'actualObject should be object.', 400);
 
       try { mergeObjects(actualObject, newObject); }
       catch (received) { expect(received).toEqual(expected); }
@@ -63,7 +63,7 @@ describe('mergeObjects = (actualObject, newObject)', () => {
     const actualObject = {};
 
     for (let newObject of newObjects) {
-      const expected = new ErrorResponseModel(newObject, 'newObject should be an object.', 400);
+      const expected = new ErrorResponseModel(newObject, 'newObject should be object.', 400);
 
       try { mergeObjects(actualObject, newObject); }
       catch (received) { expect(received).toEqual(expected); }

@@ -1,28 +1,23 @@
 const { mergeObjects, throwErrorResponseModel } = require('../index').utils;
 const { isObject, isEmptyObject, isClassOf } = require('../index').validations;
 const { SuccessResponseModel } = require('../index').models;
+const { throwIfIsNotObject, throwIfIsNotClassOf, throwIfIsNotString, throwIfIsEmptyObject } = require('../index').throws;
 
 
-const dbGateway = function dbGateway(docClient, tableName) {
+module.exports = function dbGateway(docClient, tableName) {
   const _dbGatewayInputValidation = () => {
-    if (!isClassOf(docClient, 'DocumentClient'))
-      throwErrorResponseModel(docClient, '"docClient" should be a DocumentClient.');
-
-    if (typeof tableName != 'string')
-      throwErrorResponseModel(tableName, '"tableName" should be a string.');
+    throwIfIsNotClassOf(docClient, 'DocumentClient', '"docClient" should be DocumentClient.')
+    throwIfIsNotString(tableName, '"tableName" should be string.')
   }
 
   const _doRequest = async function (method, dbParams) {
+    throwIfIsNotObject(dbParams, '"dbParams" should be object.')
+    throwIfIsEmptyObject(dbParams, '"dbParams" should not be empty object.')
+
     if (!(method == 'get' || method == 'put' || method == 'delete' || method == 'scan' || method == 'query'))
       throwErrorResponseModel(method, '"method" should be "get", "put", "delete", "query" or "scan".')
 
-    if (!isObject(dbParams))
-      throwErrorResponseModel(dbParams, '"dbParams" should be an object.')
-
-    if (isEmptyObject(dbParams))
-      throwErrorResponseModel(dbParams, '"dbParams" should not be an empty object.')
-
-    dbParams.TableName = tableName; 
+    dbParams.TableName = tableName;
     const result = await docClient[method](dbParams).promise().catch(result => result)
 
     if (result.message || result.Payload && result.Payload.errorMessage)
@@ -38,14 +33,9 @@ const dbGateway = function dbGateway(docClient, tableName) {
   }
 
   const _getUpdatedHistoric = function (actualItem, changedBy) {
-    if (!isObject(actualItem))
-      throwErrorResponseModel(actualItem, '"actualItem" should be an object.')
-
-    if (isEmptyObject(actualItem))
-      throwErrorResponseModel(actualItem, '"actualItem" should not be an empty object.')
-
-    if (typeof changedBy != 'string')
-      throwErrorResponseModel(changedBy, '"changedBy" should be a string.');
+    throwIfIsNotObject(actualItem, '"actualItem" should be object.')
+    throwIfIsEmptyObject(actualItem, '"actualItem" should not be empty object.')
+    throwIfIsNotString(changedBy, '"changedBy" should be string.');
 
     const actualHistoricList = actualItem.historic == undefined ? [] : Object.assign([], actualItem.historic);
     actualItem.historic = undefined;
@@ -62,15 +52,11 @@ const dbGateway = function dbGateway(docClient, tableName) {
   const get = async function ({ keys, projectionExpression }) {
     _dbGatewayInputValidation();
 
-    if (!isObject(keys))
-      throwErrorResponseModel(keys, '"keys" should be an object.')
-
-    if (isEmptyObject(keys))
-      throwErrorResponseModel(keys, '"keys" should not be an empty object.') 
+    throwIfIsNotObject(keys, '"keys" should be object.')
+    throwIfIsEmptyObject(keys, '"keys" should not be empty object.')
 
     if (!(projectionExpression === undefined || typeof projectionExpression == 'string'))
-      throwErrorResponseModel(projectionExpression, '"projectionExpression" should be a string or undefined');
-
+      throwErrorResponseModel(projectionExpression, '"projectionExpression" should be string or undefined');
 
     const dbParams = {
       Key: keys,
@@ -83,23 +69,12 @@ const dbGateway = function dbGateway(docClient, tableName) {
   const query = async function ({ keyConditionExpression, expressionAttributeValues, expressionAttributeNames, projectionExpression }) {
     _dbGatewayInputValidation();
 
-    if (typeof keyConditionExpression != 'string')
-      throwErrorResponseModel(keyConditionExpression, '"keyConditionExpression" should be a string.');
-
-    if (!isObject(expressionAttributeValues))
-      throwErrorResponseModel(expressionAttributeValues, '"expressionAttributeValues" should be an object.');
-
-    if (isEmptyObject(expressionAttributeValues))
-      throwErrorResponseModel(expressionAttributeValues, '"expressionAttributeValues" should not be an empty object.');
-
-    if (!(projectionExpression === undefined || typeof projectionExpression == 'string'))
-      throwErrorResponseModel(projectionExpression, '"projectionExpression" should be a string or undefined.');
-
-    if (!(expressionAttributeNames === undefined || isObject(expressionAttributeNames)))
-      throwErrorResponseModel(expressionAttributeNames, '"expressionAttributeNames" should be an object or undefined.');
-
-    if (!(expressionAttributeNames === undefined || !isEmptyObject(expressionAttributeNames)))
-      throwErrorResponseModel(expressionAttributeNames, '"expressionAttributeNames" should not be an empty object.');
+    throwIfIsNotString(keyConditionExpression, '"keyConditionExpression" should be string.');
+    throwIfIsNotObject(expressionAttributeValues, '"expressionAttributeValues" should be object.');
+    throwIfIsEmptyObject(expressionAttributeValues, '"expressionAttributeValues" should not be empty object.');
+    throwIfIsNotString(projectionExpression, '"projectionExpression" should be string or undefined.');
+    throwIfIsNotObject(expressionAttributeNames, '"expressionAttributeNames" should be object or undefined.');
+    throwIfIsEmptyObject(expressionAttributeNames, '"expressionAttributeNames" should not be empty object.');
 
     const dbParams = {
       ProjectionExpression: projectionExpression,
@@ -114,23 +89,12 @@ const dbGateway = function dbGateway(docClient, tableName) {
   const scan = async function ({ filterExpression, expressionAttributeValues, expressionAttributeNames, projectionExpression }) {
     _dbGatewayInputValidation();
 
-    if (typeof filterExpression != 'string')
-      throwErrorResponseModel(filterExpression, '"filterExpression" should be a string.');
-
-    if (!isObject(expressionAttributeValues))
-      throwErrorResponseModel(expressionAttributeValues, '"expressionAttributeValues" should be an object.');
-
-    if (isEmptyObject(expressionAttributeValues))
-      throwErrorResponseModel(expressionAttributeValues, '"expressionAttributeValues" should not be an empty object.');
-
-    if (!(projectionExpression === undefined || typeof projectionExpression == 'string'))
-      throwErrorResponseModel(projectionExpression, '"projectionExpression" should be a string or undefined.');
-
-    if (!(expressionAttributeNames === undefined || isObject(expressionAttributeNames)))
-      throwErrorResponseModel(expressionAttributeNames, '"expressionAttributeNames" should be an object or undefined.');
-
-      if (!(expressionAttributeNames === undefined || !isEmptyObject(expressionAttributeNames)))
-      throwErrorResponseModel(expressionAttributeNames, '"expressionAttributeNames" should not be an empty object.');
+    throwIfIsNotString(filterExpression, '"filterExpression" should be string.');
+    throwIfIsNotObject(expressionAttributeValues, '"expressionAttributeValues" should be object.');
+    throwIfIsEmptyObject(expressionAttributeValues, '"expressionAttributeValues" should not be empty object.');
+    throwIfIsNotString(projectionExpression, '"projectionExpression" should be string or undefined.');
+    throwIfIsNotObject(expressionAttributeNames, '"expressionAttributeNames" should be object or undefined.');
+    throwIfIsEmptyObject(expressionAttributeNames, '"expressionAttributeNames" should not be empty object.');
 
     const dbParams = {
       ProjectionExpression: projectionExpression,
@@ -145,11 +109,8 @@ const dbGateway = function dbGateway(docClient, tableName) {
   const del = async function ({ keys }) {
     _dbGatewayInputValidation();
 
-    if (!isObject(keys))
-      throwErrorResponseModel(keys, '"keys" should be an object.')
-
-    if (isEmptyObject(keys))
-      throwErrorResponseModel(keys, '"keys" should not be an empty object.')
+    throwIfIsNotObject(keys, '"keys" should be object.')
+    throwIfIsEmptyObject(keys, '"keys" should not be empty object.')
 
     const dbParams = {
       Key: keys
@@ -161,18 +122,13 @@ const dbGateway = function dbGateway(docClient, tableName) {
 
   const put = async function ({ updateObject, keys, changedBy }) {
     _dbGatewayInputValidation();
- 
-    if (!isObject(updateObject)) 
-      throwErrorResponseModel(updateObject, '"updateObject" should be an object.')
 
-    if (isEmptyObject(updateObject))
-      throwErrorResponseModel(updateObject, '"updateObject" should not be an empty object.')
+    throwIfIsNotObject(updateObject, '"updateObject" should be object.')
+    throwIfIsEmptyObject(updateObject, '"updateObject" should not be empty object.')
 
     let actualItem = await get({ keys });
     actualItem = actualItem.item;
-
-    if (!isObject(actualItem))  
-      throwErrorResponseModel(keys, '"actualItem" should be an object.')
+    throwIfIsNotObject(actualItem, '"actualItem" should be object.')
 
     const updatedHistoric = _getUpdatedHistoric(actualItem, changedBy);
     updateObject.historic = updatedHistoric;
@@ -188,82 +144,4 @@ const dbGateway = function dbGateway(docClient, tableName) {
   }
 
   return { get, query, scan, del, put, _dbGatewayInputValidation, _doRequest, _getUpdatedHistoric }
-
-  // if (!(projectionExpression === undefined || typeof projectionExpression == 'string'))
-  //   throwErrorResponseModel(projectionExpression, '"projectionExpression" should be string or undefined');
-
-  // if (!(expressionAttributeNames === undefined || isObject(expressionAttributeNames)))
-  //   throwErrorResponseModel(expressionAttributeNames, '"expressionAttributeNames" should be an object or undefined');
-
-  // if (!(method == 'get' || method == 'put' || method == 'delete' || method == 'scan' || method == 'query'))
-  //   throwErrorResponseModel(method, 'method attribute must be "get", "put", "delete", "query" or "scan".')
-
-  // if ((method == 'get' || method == 'delete') && isEmptyObject(path))
-  //   throwErrorResponseModel(path, '"path" should not be an empty object.')
-
-  // if (method == 'query' && !(typeof keyConditionExpression == 'string' && keyConditionExpression.length != 0))
-  //   throwErrorResponseModel(keyConditionExpression, 'keyConditionExpression attribute must have at least one character in query methods.');
-
-  // if (method == 'query' && !isObject(expressionAttributeValues))
-  //   throwErrorResponseModel(expressionAttributeValues, 'expressionAttributeValues attribute must be an object in query methods.');
-
-  // if (method == 'query' && isEmptyObject(expressionAttributeValues))
-  //   throwErrorResponseModel(expressionAttributeValues, 'expressionAttributeValues attribute must not be an empty object in query methods.');
-
-  // if (method == 'scan' && typeof filterExpression != 'string')
-  //   throwErrorResponseModel(filterExpression, 'filterExpression attribute must be a string in scan methods.');
-
-  // if (method == 'scan' && !isObject(expressionAttributeValues))
-  //   throwErrorResponseModel(expressionAttributeValues, 'expressionAttributeValues attribute must be an object in scan methods.');
-
-  // if (method == 'scan' && isEmptyObject(expressionAttributeValues))
-  //   throwErrorResponseModel(expressionAttributeValues, 'expressionAttributeValues attribute must not be an empty object in scan methods.');
-
-
-  // let item;
-  // if (method == 'put')
-  //   item = await createItem(docClient, body, path, header, tableName);
-
-  // const dbParams = {
-  //   TableName: tableName,
-  //   Key: path,
-  //   Item: item,
-  //   ProjectionExpression: projectionExpression,
-  //   KeyConditionExpression: keyConditionExpression,
-  //   ExpressionAttributeValues: expressionAttributeValues,
-  //   ExpressionAttributeNames: expressionAttributeNames,
-  //   FilterExpression: filterExpression,
-  // error: error
-  // }
-
-  // const result = await docClient[method](dbParams).promise().catch(result => result)
-
-  // // ==================================================
-  // // VERIFICATING IF THE BELOW PART IS NECESSARY 27/06
-  // // ==================================================
-  // // if (result.Payload && typeof result.Payload == 'string')
-  // //   result.Payload = JSON.parse(result.Payload);
-
-  // if (result.message || result.Payload && result.Payload.errorMessage)
-  //   throwErrorResponseModel(result, result.message, result.statusCode);
-
-
-
-  // return new SuccessResponseModel({
-  //   item: result.Item,
-  //   items: result.Items,
-  //   count: result.Count,
-  //   scannedCount: result.ScannedCount,
-  //   statusCode: 200
-  // });
 };
-
-
-
-
-
-
-
-
-
-module.exports = dbGateway
