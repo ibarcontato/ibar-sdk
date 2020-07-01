@@ -1,7 +1,10 @@
-const { mergeObjects, throwErrorResponseModel } = require('../index').utils;
-const { isObject, isEmptyObject, isClassOf } = require('../index').validations;
-const { SuccessResponseModel } = require('../index').models;
-const { throwIfIsNotObject, throwIfIsNotClassOf, throwIfIsNotString, throwIfIsEmptyObject } = require('../index').throws;
+const mergeObjects = require('../utils/merge-objects')
+const throwErrorResponseModel = require('../utils/throw-error-response-model');
+const SuccessResponseModel = require('../models/success-response-model');
+const throwIfIsNotObject = require('../throws/throw-if-is-not-object');
+const throwIfIsNotClassOf = require('../throws/throw-if-is-not-class-of');
+const throwIfIsNotString = require('../throws/throw-if-is-not-string');
+const throwIfIsEmptyObject = require('../throws/throw-if-is-empty-object');
 
 
 module.exports = function dbGateway(docClient, tableName) {
