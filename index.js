@@ -25,6 +25,8 @@ exports.throws = {
   throwIfIsNotObject: require('./throws/throw-if-is-not-object'),
   throwIfIsNotClassOf: require('./throws/throw-if-is-not-class-of'),
   throwIfIsNotString: require('./throws/throw-if-is-not-string'),
-  throwIfIsEmptyObject: require('./throws/throw-if-is-empty-object')
+  throwIfIsEmptyObject: require('./throws/throw-if-is-empty-object'),
+  throwIfIsNotUndefinedNeitherObject: require('./throws/throw-if-is-not-undefined-neither-object'),
+  throwIfIsNotUndefinedNeitherString: require('./throws/throw-if-is-not-undefined-neither-string')
 }
 
