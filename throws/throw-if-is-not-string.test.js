@@ -1,7 +1,7 @@
 
 const throwIfIsNotString = require('./throw-if-is-not-string');
 
-describe.only('\n function throwIfIsNotString(data, errorMessage, statusCode)', () => {
+describe('\n function throwIfIsNotString(data, errorMessage, statusCode)', () => {
   test('should return undefined when data is string', async () => {
     const data = '';
     const errorMessage = 'errorMessage';

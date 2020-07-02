@@ -1,4 +1,3 @@
-const isObject = require("../validations/is-object")
 const throwErrorResponseModel = require('../utils/throw-error-response-model');
 
 module.exports = function throwIfIsNotString(data, errorMessage, statusCode) {
