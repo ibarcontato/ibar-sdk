@@ -240,7 +240,7 @@ describe('\n get = async function ({ keys, projectionExpression })', () => {
 
       const expected = JSON.stringify({
         statusCode: 400,
-        errorMessage: '"projectionExpression" should be string or undefined',
+        errorMessage: '"projectionExpression" should be string or undefined.',
         inputData: projectionExpression
       });
 

@@ -5,6 +5,8 @@ const throwIfIsNotObject = require('../throws/throw-if-is-not-object');
 const throwIfIsNotClassOf = require('../throws/throw-if-is-not-class-of');
 const throwIfIsNotString = require('../throws/throw-if-is-not-string');
 const throwIfIsEmptyObject = require('../throws/throw-if-is-empty-object');
+const throwIfIsNotUndefinedNeitherObject = require('../throws/throw-if-is-not-undefined-neither-object');
+const throwIfIsNotUndefinedNeitherString = require('../throws/throw-if-is-not-undefined-neither-string');
 
 
 module.exports = function dbGateway(docClient, tableName) {
@@ -58,8 +60,9 @@ module.exports = function dbGateway(docClient, tableName) {
     throwIfIsNotObject(keys, '"keys" should be object.')
     throwIfIsEmptyObject(keys, '"keys" should not be empty object.')
 
-    if (!(projectionExpression === undefined || typeof projectionExpression == 'string'))
-      throwErrorResponseModel(projectionExpression, '"projectionExpression" should be string or undefined');
+    throwIfIsNotUndefinedNeitherString(projectionExpression, '"projectionExpression" should be string or undefined.')
+    // if (!(projectionExpression === undefined || typeof projectionExpression == 'string'))
+    //   throwErrorResponseModel(projectionExpression, '"projectionExpression" should be string or undefined');
 
     const dbParams = {
       Key: keys,
@@ -75,8 +78,8 @@ module.exports = function dbGateway(docClient, tableName) {
     throwIfIsNotString(keyConditionExpression, '"keyConditionExpression" should be string.');
     throwIfIsNotObject(expressionAttributeValues, '"expressionAttributeValues" should be object.');
     throwIfIsEmptyObject(expressionAttributeValues, '"expressionAttributeValues" should not be empty object.');
-    throwIfIsNotString(projectionExpression, '"projectionExpression" should be string or undefined.');
-    throwIfIsNotObject(expressionAttributeNames, '"expressionAttributeNames" should be object or undefined.');
+    throwIfIsNotUndefinedNeitherString(projectionExpression, '"projectionExpression" should be string or undefined.')
+    throwIfIsNotUndefinedNeitherObject(expressionAttributeNames, '"expressionAttributeNames" should be object or undefined.');
     throwIfIsEmptyObject(expressionAttributeNames, '"expressionAttributeNames" should not be empty object.');
 
     const dbParams = {
@@ -95,8 +98,8 @@ module.exports = function dbGateway(docClient, tableName) {
     throwIfIsNotString(filterExpression, '"filterExpression" should be string.');
     throwIfIsNotObject(expressionAttributeValues, '"expressionAttributeValues" should be object.');
     throwIfIsEmptyObject(expressionAttributeValues, '"expressionAttributeValues" should not be empty object.');
-    throwIfIsNotString(projectionExpression, '"projectionExpression" should be string or undefined.');
-    throwIfIsNotObject(expressionAttributeNames, '"expressionAttributeNames" should be object or undefined.');
+    throwIfIsNotUndefinedNeitherString(projectionExpression, '"projectionExpression" should be string or undefined.');
+    throwIfIsNotUndefinedNeitherObject(expressionAttributeNames, '"expressionAttributeNames" should be object or undefined.');
     throwIfIsEmptyObject(expressionAttributeNames, '"expressionAttributeNames" should not be empty object.');
 
     const dbParams = {
