@@ -1,6 +1,6 @@
 const dbGateway = require('./db-gateway');
 
-const mockedDocumentClient = require('./doc-client-mock');
+const mockedDocumentClient = require('./doc-client.mock');
 const docClient = new mockedDocumentClient();
 
 describe('\n function dbGateway(docClient, tableName)', () => {
