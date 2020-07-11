@@ -66,51 +66,6 @@ describe('createInvokeParams = (functionName, method, tableName, stage = "dev", 
     }
   })
 
-  test('should return an error message when "method" is not a string', async () => {
-    const functionName = 'functionName';
-    const methods = [1, true, null, undefined, {}, [], () => { }];
-    const tableName = 'tableName';
-    const stage = 'stage';
-    const dbParams = { key: 'value' };
-
-    for (let method of methods) {
-      const inputData = { functionName, method, tableName, stage, dbParams };
-      if (typeof method == 'function') inputData.method = undefined;
-
-      const expected = {
-        errorMessage: '"method" should be string.',
-        statusCode: 400,
-        inputData: inputData
-      };
-
-      try { createInvokeParams(functionName, method, tableName, stage, dbParams) }
-      catch (received) { expect(JSON.parse(received)).toEqual(expected) }
-    }
-  })
-
-  test('should return an error message when "tableName" is not a string', async () => {
-    const functionName = 'functionName';
-    const method = 'method';
-    const tableNames = [1, true, null, undefined, {}, [], () => { }];
-    const stage = 'stage';
-    const dbParams = { key: 'value' };
-
-    for (let tableName of tableNames) {
-      const inputData = { functionName, method, tableName, stage, dbParams };
-      if (typeof tableName == 'function') {
-        inputData.tableName = undefined
-      };
-
-      const expected = {
-        errorMessage: '"tableName" should be string.',
-        statusCode: 400,
-        inputData: inputData
-      };
-
-      try { createInvokeParams(functionName, method, tableName, stage, dbParams) } 
-      catch (received) { expect(JSON.parse(received)).toEqual(expected) }
-    }
-  })
   test('should return an error message when "stage" is not a string or undefined', async () => {
     const functionName = 'functionName';
     const method = 'method';
