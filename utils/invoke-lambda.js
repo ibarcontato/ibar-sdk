@@ -1,6 +1,6 @@
 const { createInvokeParams } = require('./create-invoke-params')
 const isObject = require('../validations/is-object')
-const throwErrorResponseModel = require('../utils/throw-error-response-model');
+const throwErrorResponseModel = require('../throws/throw-error-response-model');
 
 module.exports = invokeLambda = async ({ lambda, functionName, stage = 'dev', payload }) => {
   const invokeParams = {

@@ -1,5 +1,5 @@
 const mergeObjects = require('../utils/merge-objects')
-const throwErrorResponseModel = require('../utils/throw-error-response-model');
+const throwErrorResponseModel = require('../throws/throw-error-response-model');
 const SuccessResponseModel = require('../models/success-response-model');
 const throwIfIsNotObject = require('../throws/throw-if-is-not-object');
 const throwIfIsNotClassOf = require('../throws/throw-if-is-not-class-of');

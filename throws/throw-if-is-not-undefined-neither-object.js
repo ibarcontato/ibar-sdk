@@ -1,4 +1,4 @@
-const throwErrorResponseModel = require('../utils/throw-error-response-model');
+const throwErrorResponseModel = require('../throws/throw-error-response-model');
 const isObject = require('../validations/is-object');
 
 module.exports = function throwIfIsNotUndefinedNeitherObject(data, errorMessage, statusCode) {

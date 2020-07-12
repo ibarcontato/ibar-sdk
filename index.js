@@ -13,7 +13,6 @@ exports.validations = {
 
 exports.utils = {
   mergeObjects: require('./utils/merge-objects'),
-  throwErrorResponseModel: require('./utils/throw-error-response-model'),
   debugResult: require('./utils/debug-result'),
   invokeLambda: require('./utils/invoke-lambda')
 }
@@ -23,6 +22,7 @@ exports.database = {
 }
 
 exports.throws = {
+  throwErrorResponseModel: require('./throws/throw-error-response-model'),
   throwIfIsNotObject: require('./throws/throw-if-is-not-object'),
   throwIfIsNotClassOf: require('./throws/throw-if-is-not-class-of'),
   throwIfIsNotString: require('./throws/throw-if-is-not-string'),
