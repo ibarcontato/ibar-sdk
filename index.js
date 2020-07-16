@@ -5,7 +5,9 @@ exports.models = {
 
 exports.validations = {
   isObject: require('./validations/is-object'),
+  isArray: require('./validations/is-array'),
   isEmptyObject: require('./validations/is-empty-object'),
+  isEmptyArray: require('./validations/is-empty-array'),
   isEmailValid: require('./validations/is-email-valid'),
   isVerificationCodeValid: require('./validations/is-verification-code-valid'),
   isClassOf: require('./validations/is-class-of'),
@@ -28,6 +30,7 @@ exports.throws = {
   throwIfIsNotClassOf: require('./throws/throw-if-is-not-class-of'),
   throwIfIsNotString: require('./throws/throw-if-is-not-string'),
   throwIfIsEmptyObject: require('./throws/throw-if-is-empty-object'),
+  throwIfIsEmptyArray: require('./throws/throw-if-is-empty-array'),
   throwIfIsNotUndefinedNeitherObject: require('./throws/throw-if-is-not-undefined-neither-object'),
   throwIfIsNotUndefinedNeitherString: require('./throws/throw-if-is-not-undefined-neither-string'),
 }
