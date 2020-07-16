@@ -24,10 +24,11 @@ exports.database = {
 exports.throws = {
   throwErrorResponseModel: require('./throws/throw-error-response-model'),
   throwIfIsNotObject: require('./throws/throw-if-is-not-object'),
+  throwIfIsNotArray: require('./throws/throw-if-is-not-array'),
   throwIfIsNotClassOf: require('./throws/throw-if-is-not-class-of'),
   throwIfIsNotString: require('./throws/throw-if-is-not-string'),
   throwIfIsEmptyObject: require('./throws/throw-if-is-empty-object'),
   throwIfIsNotUndefinedNeitherObject: require('./throws/throw-if-is-not-undefined-neither-object'),
-  throwIfIsNotUndefinedNeitherString: require('./throws/throw-if-is-not-undefined-neither-string')
+  throwIfIsNotUndefinedNeitherString: require('./throws/throw-if-is-not-undefined-neither-string'),
 }
 
