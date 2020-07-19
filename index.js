@@ -16,7 +16,8 @@ exports.validations = {
 exports.utils = {
   mergeObjects: require('./utils/merge-objects'),
   debugResult: require('./utils/debug-result'),
-  invokeLambda: require('./utils/invoke-lambda')
+  invokeLambda: require('./utils/invoke-lambda'),
+  decryptToken: require('./utils/decrypt-token')
 }
 
 exports.database = {
