@@ -1,4 +1,4 @@
-const { throwErrorResponseModel } = require('ibar-sdk').throws;
+const throwErrorResponseModel = require('../throws/throw-error-response-model')
 const CryptoJS = require('crypto-js');
 
 module.exports = function decryptToken(token, tokenSecret) {
