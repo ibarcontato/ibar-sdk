@@ -58,6 +58,12 @@ module.exports = class DocumentClient {
     }
   }
 
+  post(dbParams) {
+    return {
+      promise: () => this.isError ? Promise.reject(docClientError) : Promise.resolve({})
+    }
+  }
+
   delete(dbParams) {
     return {
       promise: () => this.isError ? Promise.reject(docClientError) : Promise.resolve({})

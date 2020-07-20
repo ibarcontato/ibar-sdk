@@ -755,3 +755,95 @@ describe('\n put = async function ({ updateObject, keys, changedBy })', () => {
     expect(JSON.parse(received).errorMessage).toEqual(JSON.parse(expected).errorMessage)
   })
 })
+
+describe('\n post = async function ({ createObject, keys, changedBy })', () => {
+  test('should return a successful object when all input are valid', async () => {
+    const createObject = { key: 'value' };
+    const keys = { id: 'nonExistingId' };
+    const changedBy = 'changedBy';
+ 
+    const tableName = 'tableName';
+
+    const dbParams = {
+      createObject: createObject,
+      keys: keys,
+      changedBy: changedBy,
+    }
+
+    const expected = {
+      statusCode: 200
+    }
+
+    const received = await dbGateway(docClient, tableName).post(dbParams).catch(received => received)
+    expect(received).toEqual(expected)
+  })
+
+  test('should return an error object when "createObject" is not an object', async () => {
+    const keys = { id: 'id' };
+    const changedBy = 'changedBy';
+    const tableName = 'tableName';
+    const createObjects = [1, true, '', [], () => { }, undefined, null];
+
+    for (let createObject of createObjects) {
+      const dbParams = {
+        createObject: createObject,
+        keys: keys,
+        changedBy: changedBy,
+      }
+
+      const expected = JSON.stringify({
+        statusCode: 400,
+        errorMessage: '"createObject" should be object.',
+        inputData: createObject
+      });
+
+      const received = await dbGateway(docClient, tableName).post(dbParams).catch(received => received)
+      expect(JSON.parse(received)).toEqual(JSON.parse(expected))
+    }
+  })
+
+  test('should return an error object when "createObject" is empty object', async () => {
+    const keys = { id: 'id' };
+    const changedBy = 'changedBy';
+    const tableName = 'tableName';
+    const createObject = {};
+
+    const dbParams = {
+      createObject: createObject,
+      keys: keys,
+      changedBy: changedBy,
+    }
+
+    const expected = JSON.stringify({
+      statusCode: 400,
+      errorMessage: '"createObject" should not be empty object.',
+      inputData: createObject
+    });
+
+    const received = await dbGateway(docClient, tableName).post(dbParams).catch(received => received)
+    expect(JSON.parse(received)).toEqual(JSON.parse(expected))
+  })
+
+  test('should return an error object when "keys" finds items in database', async () => {
+    const keys = { id: 'id' };
+    const changedBy = 'changedBy';
+    const tableName = 'tableName';
+    const createObject = { key: 'value'};
+
+    const dbParams = {
+      createObject: createObject,
+      keys: keys,
+      changedBy: changedBy, 
+    } 
+
+    const expected = JSON.stringify({
+      statusCode: 400,
+      errorMessage: '"actualItem already exists.',
+      inputData: keys 
+    });
+
+    const received = await dbGateway(docClient, tableName).post(dbParams).catch(received => received)
+    expect(JSON.parse(received).statusCode).toEqual(JSON.parse(expected).statusCode)
+    expect(JSON.parse(received).errorMessage).toEqual(JSON.parse(expected).errorMessage)
+  })
+})

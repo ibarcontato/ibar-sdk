@@ -149,5 +149,32 @@ module.exports = function dbGateway(docClient, tableName) {
     return await _doRequest('put', dbParams);
   }
 
-  return { get, query, scan, del, put, _dbGatewayInputValidation, _doRequest, _getUpdatedHistoric }
+  const post = async function ({ createObject, keys, changedBy }) {
+    _dbGatewayInputValidation();
+
+    throwIfIsNotObject(createObject, '"createObject" should be object.')
+    throwIfIsEmptyObject(createObject, '"createObject" should not be empty object.')
+
+    let actualItem = await get({ keys });
+    actualItem = actualItem.item;
+
+    if (actualItem)
+      throwErrorResponseModel(actualItem, '"actualItem already exists.');
+
+    actualItem = { historic: undefined };
+
+    const updatedHistoric = _getUpdatedHistoric(actualItem, changedBy);
+    createObject.historic = updatedHistoric;
+    createObject = mergeObjects(createObject, keys);
+
+    const item = mergeObjects(actualItem, createObject);
+
+    const dbParams = {
+      Item: item
+    }
+
+    return await _doRequest('put', dbParams);
+  }
+
+  return { get, query, scan, del, put, post, _dbGatewayInputValidation, _doRequest, _getUpdatedHistoric }
 };
