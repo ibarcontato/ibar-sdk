@@ -15,9 +15,11 @@
   "bugs": {
     "url": "https://github.com/ibarcontato/user/issues"
   },
-  "devDependencies": {
-    "aws-sdk": "^2.701.0",
+  "dependencies": {
     "crypto-js": "^4.0.0"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.701.0"
   },
   "homepage": "https://github.com/ibarcontato/user#readme"
 }
