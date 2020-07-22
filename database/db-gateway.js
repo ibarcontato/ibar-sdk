@@ -95,8 +95,8 @@ module.exports = function dbGateway(docClient, tableName) {
   const scan = async function ({ filterExpression, expressionAttributeValues, expressionAttributeNames, projectionExpression }) {
     _dbGatewayInputValidation();
 
-    throwIfIsNotString(filterExpression, '"filterExpression" should be string.');
-    throwIfIsNotObject(expressionAttributeValues, '"expressionAttributeValues" should be object.');
+    throwIfIsNotUndefinedNeitherString(filterExpression, '"filterExpression" should be string.');
+    throwIfIsNotUndefinedNeitherObject(expressionAttributeValues, '"expressionAttributeValues" should be object.');
     throwIfIsEmptyObject(expressionAttributeValues, '"expressionAttributeValues" should not be empty object.');
     throwIfIsNotUndefinedNeitherString(projectionExpression, '"projectionExpression" should be string or undefined.');
     throwIfIsNotUndefinedNeitherObject(expressionAttributeNames, '"expressionAttributeNames" should be object or undefined.');

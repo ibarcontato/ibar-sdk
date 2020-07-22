@@ -512,7 +512,7 @@ describe('\n scan = async function ({ filterExpression, expressionAttributeValue
   })
 
   test('should return an error object when "filterExpression" is not a string', async () => {
-    const filterExpressions = [1, true, {}, [], () => { }, undefined, null];
+    const filterExpressions = [1, true, {}, [], () => { }, null];
     const expressionAttributeValues = { id: 'id' };
     const expressionAttributeNames = { key: 'value' };
     const projectionExpression = '';
@@ -542,7 +542,7 @@ describe('\n scan = async function ({ filterExpression, expressionAttributeValue
     const expressionAttributeNames = { key: 'value' };
     const projectionExpression = '';
     const tableName = 'tableName';
-    const expressionAttributeValuesList = [1, true, '', [], () => { }, undefined, null];
+    const expressionAttributeValuesList = [1, true, '', [], () => { }, null];
 
     for (let expressionAttributeValues of expressionAttributeValuesList) {
       const dbParams = {
