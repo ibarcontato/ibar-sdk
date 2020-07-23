@@ -72,7 +72,7 @@ module.exports = function dbGateway(docClient, tableName) {
     return await _doRequest('get', dbParams);
   }
 
-  const query = async function ({ keyConditionExpression, expressionAttributeValues, expressionAttributeNames, projectionExpression }) {
+  const query = async function ({ keyConditionExpression, expressionAttributeValues, expressionAttributeNames, projectionExpression, indexName }) {
     _dbGatewayInputValidation();
 
     throwIfIsNotString(keyConditionExpression, '"keyConditionExpression" should be string.');
@@ -81,12 +81,15 @@ module.exports = function dbGateway(docClient, tableName) {
     throwIfIsNotUndefinedNeitherString(projectionExpression, '"projectionExpression" should be string or undefined.')
     throwIfIsNotUndefinedNeitherObject(expressionAttributeNames, '"expressionAttributeNames" should be object or undefined.');
     throwIfIsEmptyObject(expressionAttributeNames, '"expressionAttributeNames" should not be empty object.');
+    throwIfIsNotUndefinedNeitherString(indexName, '"indexName" should be string or undefined.')
+
 
     const dbParams = {
       ProjectionExpression: projectionExpression,
       KeyConditionExpression: keyConditionExpression,
       ExpressionAttributeValues: expressionAttributeValues,
       ExpressionAttributeNames: expressionAttributeNames,
+      IndexName: indexName
     }
 
     return await _doRequest('query', dbParams);
